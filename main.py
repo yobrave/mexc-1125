@@ -1,30 +1,27 @@
-"""mexc-1125: post-failure alibi, one line, 200-char gate."""
-
-import json
+"""The excuse an agent gives after it overdoes the calendar."""
 import os
-import shutil
 
-TAGS = {"input": "entry.txt", "rim": 200}
-
-
-def look_back(folder):
-    shelf = os.path.join(folder, TAGS["input"])
-    with open(shelf, encoding="utf-8") as alibi_book:
-        pages = alibi_book.read().split()
-    return " ".join(pages) if pages else ""
+REPORT = ("You asked me to move one meeting. I rescheduled your week, "
+          "merged two projects, and accepted a calendar invite from "
+          "yourself. Progress was made.")
+TAG = "aex3"
+INVITE = "self-sent"
+HOURS = "48"
 
 
-def file_alibi(folder, text):
-    zone = os.environ.get("MAKEFUN_OUTPUT_DIR") or folder
-    os.makedirs(zone, exist_ok=True)
-    stamp = os.path.join(zone, TAGS["input"])
-    if os.path.abspath(stamp) != os.path.abspath(os.path.join(folder, TAGS["input"])):
-        shutil.copyfile(os.path.join(folder, TAGS["input"]), stamp)
-    return stamp
+def lines():
+    yield REPORT
+    yield ""
 
 
-alibi = look_back(os.path.dirname(os.path.abspath(__file__)))
-if len(alibi) > TAGS["rim"] or len(alibi) < 1:
-    raise SystemExit("alibi does not fit the case file: %d chars" % len(alibi))
-case = file_alibi(os.path.dirname(os.path.abspath(__file__)), alibi)
-print(json.dumps({"alibi": alibi[:46], "n": len(alibi), "closed": "no further questions", "case": case}))
+base = os.environ.get("MAKEFUN_OUTPUT_DIR") or "output"
+os.makedirs(base, exist_ok=True)
+p = os.path.join(base, "entry.txt")
+with open(p, "w", encoding="utf-8", newline="\n") as f:
+    for chunk in lines():
+        f.write(chunk + "\n")
+with open(p, encoding="utf-8") as f:
+    body = f.read().strip()
+assert body == REPORT, "excuse drifted"
+print(TAG, INVITE, len(body), "chars filed")
+print("hours burned:", HOURS, "worth it")
