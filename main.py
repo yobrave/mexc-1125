@@ -11,7 +11,6 @@ HOURS = "48"
 
 def lines():
     yield REPORT
-    yield ""
 
 
 base = os.environ.get("MAKEFUN_OUTPUT_DIR") or "output"
